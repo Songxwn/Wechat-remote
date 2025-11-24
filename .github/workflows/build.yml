@@ -8,16 +8,14 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: false   # 禁用子模块，避免 core.sshCommand 错误
+          fetch-depth: 1   # 浅克隆，避免拉取过多历史
+          submodules: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,35 +32,22 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: selkies-${{ matrix.os }}
+          name: electron-build
           path: release/**/*
 
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifacts (Ubuntu)
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: selkies-ubuntu-latest
-          path: artifacts/ubuntu
-      - name: Download artifacts (Windows)
-        uses: actions/download-artifact@v4
-        with:
-          name: selkies-windows-latest
-          path: artifacts/windows
-      - name: Download artifacts (macOS)
-        uses: actions/download-artifact@v4
-        with:
-          name: selkies-macos-latest
-          path: artifacts/macos
+          name: electron-build
+          path: artifacts
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            artifacts/ubuntu/**
-            artifacts/windows/**
-            artifacts/macos/**
+          files: artifacts/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
