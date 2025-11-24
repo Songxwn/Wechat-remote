@@ -1,0 +1,8 @@
+[
+  {
+    "name": "测试环境",
+    "url": "https://selkies-test.example.com",
+    "username": "testuser",
+    "password": "123456"
+  }
+]
