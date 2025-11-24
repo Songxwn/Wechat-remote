@@ -27,9 +27,9 @@ jobs:
       - name: Build app
         run: npm run dist
 
-      - name: Upload release artifacts
-        uses: softprops/action-gh-release@v1
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
-          files: dist/**
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: selkies-client-${{ matrix.os }}
+          path: dist/**
+  
