@@ -1,35 +1,66 @@
-name: Build and Release Electron App
+name: Build and Release
 
 on:
   push:
     tags:
-      - 'v*'   # 只有打 tag 的时候才触发，比如 v1.0.0
+      - 'v*.*.*'
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build app
-        run: npm run dist
+        run: npm run build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: selkies-client-${{ matrix.os }}
-          path: dist/**
-  
+          name: selkies-${{ matrix.os }}
+          path: release/**/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts (Ubuntu)
+        uses: actions/download-artifact@v4
+        with:
+          name: selkies-ubuntu-latest
+          path: artifacts/ubuntu
+      - name: Download artifacts (Windows)
+        uses: actions/download-artifact@v4
+        with:
+          name: selkies-windows-latest
+          path: artifacts/windows
+      - name: Download artifacts (macOS)
+        uses: actions/download-artifact@v4
+        with:
+          name: selkies-macos-latest
+          path: artifacts/macos
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/ubuntu/**
+            artifacts/windows/**
+            artifacts/macos/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
