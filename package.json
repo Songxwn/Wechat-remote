@@ -1,0 +1,20 @@
+{
+  "name": "selkies-client",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.example.selkiesclient",
+    "productName": "Selkies Client",
+    "directories": {
+      "output": "dist"
+    },
+    "files": ["**/*"],
+    "win": { "target": "nsis" },
+    "mac": { "target": "dmg" },
+    "linux": { "target": "AppImage" }
+  }
+}
