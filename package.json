@@ -1,20 +1,38 @@
 {
-  "name": "selkies-client",
-  "version": "1.0.0",
-  "main": "main.js",
+  "name": "selkies-console",
+  "version": "0.1.0",
+  "description": "Electron GUI for Selkies WebRTC connections",
+  "main": "dist/main/main.js",
+  "author": "your-name",
+  "license": "MIT",
   "scripts": {
-    "start": "electron .",
-    "dist": "electron-builder"
+    "dev": "tsc -w & electron .",
+    "build": "tsc && electron-builder",
+    "lint": "eslint . --ext .ts,.js"
   },
   "build": {
-    "appId": "com.example.selkiesclient",
-    "productName": "Selkies Client",
-    "directories": {
-      "output": "dist"
-    },
-    "files": ["**/*"],
-    "win": { "target": "nsis" },
-    "mac": { "target": "dmg" },
-    "linux": { "target": "AppImage" }
+    "appId": "com.example.selkiesconsole",
+    "files": [
+      "dist/**/*",
+      "src/renderer/index.html",
+      "static/**/*"
+    ],
+    "directories": { "output": "release" },
+    "mac": { "category": "public.app-category.developer-tools" },
+    "win": { "target": "nsis", "artifactName": "SelkiesConsole-${version}-win.exe" },
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Network",
+      "artifactName": "SelkiesConsole-${version}.AppImage"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^24.9.3",
+    "typescript": "^5.6.3",
+    "lit": "^3.1.2"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0"
   }
 }
